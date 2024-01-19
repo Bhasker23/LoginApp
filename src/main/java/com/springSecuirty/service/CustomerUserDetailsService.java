@@ -29,9 +29,15 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
         if (opt.isPresent()) {
             Customer customer = opt.get();
-            List<GrantedAuthority> authorities = new ArrayList<>();
 
-            return new User(customer.getEmail(), customer.getPassword(), authorities);
+            /* List<GrantedAuthority> authorities = new ArrayList<>();
+            The below line returning the predefined User class
+          return new User(customer.getEmail(), customer.getPassword(), authorities)
+             */
+
+            /*The below line returning the Custom User class  */
+            return new CustomerUserDetails(customer);
+
 
         } else {
             throw new BadCredentialsException("User Details not found with this user name : " + username);

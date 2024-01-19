@@ -21,6 +21,7 @@ public class SecurityConfig {
 
         hs.authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST, "/customer").permitAll()
+                            .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                             .anyRequest().authenticated();
                 }).csrf(csrf -> csrf.disable())
                 .formLogin(Customizer.withDefaults())
