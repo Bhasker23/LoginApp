@@ -1,10 +1,12 @@
 package com.springSecuirty.service;
 
+import com.springSecuirty.model.Authority;
 import com.springSecuirty.model.Customer;
 import com.springSecuirty.repo.CustomerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,17 +30,25 @@ public class CustomerUserDetailsService implements UserDetailsService {
         Optional<Customer> opt = customerRepo.findByEmail(username);
 
         if (opt.isPresent()) {
+
             Customer customer = opt.get();
 
-            /* List<GrantedAuthority> authorities = new ArrayList<>();
-            The below line returning the predefined User class
-          return new User(customer.getEmail(), customer.getPassword(), authorities)
+            List<GrantedAuthority> authorities = new ArrayList<>();
+
+            List<Authority> auths = customer.getAuthorities();
+
+            for (Authority auth : auths) {
+                SimpleGrantedAuthority sgA = new SimpleGrantedAuthority(auth.getName());
+                authorities.add(sgA);
+            }
+
+//           /*  The below line returning the predefined User class*/
+            return new User(customer.getEmail(), customer.getPassword(), authorities);
+
+
+            /*The below line returning the Custom User class
+             * return new CustomerUserDetails(customer);
              */
-
-            /*The below line returning the Custom User class  */
-            return new CustomerUserDetails(customer);
-
-
         } else {
             throw new BadCredentialsException("User Details not found with this user name : " + username);
         }

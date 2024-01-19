@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "Customers")
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 @Getter
 @Setter
 public class Customer {
@@ -21,5 +24,8 @@ public class Customer {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String address;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", fetch = FetchType.EAGER)
+    private List<Authority> authorities = new ArrayList<>();
 
 }

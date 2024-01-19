@@ -22,6 +22,8 @@ public class SecurityConfig {
         hs.authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST, "/customer").permitAll()
                             .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+                            .requestMatchers(HttpMethod.GET,"/customers").hasAuthority("VIEWALLCUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyAuthority("VIEWALLCUSTOMER","VIEWCUSTOMER")
                             .anyRequest().authenticated();
                 }).csrf(csrf -> csrf.disable())
                 .formLogin(Customizer.withDefaults())
