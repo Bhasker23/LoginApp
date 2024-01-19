@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-@Entity
+/*@Entity  This us used in Authorized based Authentication. */
 public class Authority {
 
     @Id

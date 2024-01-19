@@ -25,7 +25,11 @@ public class Customer {
     private String password;
     private String address;
 
+    /* This us used in Authorized based Authentication.
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Authority> authorities = new ArrayList<>();
-
+    */
+    /* this is used in role based Authorization*/
+    private String role;
 }

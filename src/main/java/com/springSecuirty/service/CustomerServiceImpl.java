@@ -19,12 +19,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer registerCustomer(Customer customer) {
 
+        /*  This us used in Authorized based Authentication.
         List<Authority> list = customer.getAuthorities();
 
         for (Authority auth : list) {
             auth.setCustomer(customer);
         }
 
+         */
+        customer.setRole("ROLE_" + customer.getRole().toUpperCase());
         return customerRepo.save(customer);
     }
 

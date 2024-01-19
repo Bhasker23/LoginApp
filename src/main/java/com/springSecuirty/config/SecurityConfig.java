@@ -5,12 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -22,8 +18,14 @@ public class SecurityConfig {
         hs.authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST, "/customer").permitAll()
                             .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+
+                            /* ------- -This us used in Authorized based Authentication.----------
+
                             .requestMatchers(HttpMethod.GET,"/customers").hasAuthority("VIEWALLCUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyAuthority("VIEWALLCUSTOMER","VIEWCUSTOMER")
+                             */
+                            .requestMatchers(HttpMethod.GET,"/customers").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyRole("ADMIN","ROLE")
                             .anyRequest().authenticated();
                 }).csrf(csrf -> csrf.disable())
                 .formLogin(Customizer.withDefaults())

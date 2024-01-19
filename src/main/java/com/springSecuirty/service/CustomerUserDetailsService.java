@@ -35,12 +35,18 @@ public class CustomerUserDetailsService implements UserDetailsService {
 
             List<GrantedAuthority> authorities = new ArrayList<>();
 
+            /*  This below used in Authorized based Authentication.
+
             List<Authority> auths = customer.getAuthorities();
 
             for (Authority auth : auths) {
                 SimpleGrantedAuthority sgA = new SimpleGrantedAuthority(auth.getName());
                 authorities.add(sgA);
             }
+            */
+
+            SimpleGrantedAuthority sgA = new SimpleGrantedAuthority(customer.getRole());
+            authorities.add(sgA);
 
 //           /*  The below line returning the predefined User class*/
             return new User(customer.getEmail(), customer.getPassword(), authorities);
