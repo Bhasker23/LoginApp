@@ -1,5 +1,6 @@
 package com.springSecuirty.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -8,30 +9,49 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain endPointSecure(HttpSecurity hs) throws Exception {
+    public SecurityFilterChain endPointSecure(HttpSecurity http) throws Exception {
 
-        hs.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(HttpMethod.POST, "/customer").permitAll()
-                            .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+        /*This cors configuration is used when you want to interact with front end this configuration is
+        *  required also if you are using Spring Security otherwise you can use @CrossOrigin annotation
+        *  on each controller which will be interacted with frontend */
 
-                            /* ------- -This us used in Authorized based Authentication.----------
+        http.cors(cors -> {
+            cors.configurationSource(new CorsConfigurationSource() {
+                @Override
+                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 
-                            .requestMatchers(HttpMethod.GET,"/customers").hasAuthority("VIEWALLCUSTOMER")
-                            .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyAuthority("VIEWALLCUSTOMER","VIEWCUSTOMER")
-                             */
-                            .requestMatchers(HttpMethod.GET,"/customers").hasRole("ADMIN")
-                            .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyRole("ADMIN","ROLE")
-                            .anyRequest().authenticated();
-                }).csrf(csrf -> csrf.disable())
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults());
+                    CorsConfiguration cfg = new CorsConfiguration();
 
-        return hs.build();
+                    cfg.setAllowedOriginPatterns(Collections.singletonList("*"));
+                    cfg.setAllowedMethods(Collections.singletonList("*"));
+                    cfg.setAllowCredentials(true);
+                    cfg.setAllowedHeaders(Collections.singletonList("*"));
+                    cfg.setExposedHeaders(List.of("Authorization"));
+                    return cfg;
+                }
+            });
+        }).authorizeHttpRequests(auth -> {
+            auth.requestMatchers(HttpMethod.POST, "/customer").permitAll().requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                    /* ------- -This us used in Authorized based Authentication.----------
+
+                    .requestMatchers(HttpMethod.GET,"/customers").hasAuthority("VIEWALLCUSTOMER")
+                    .requestMatchers(HttpMethod.GET, "/customer/**").hasAnyAuthority("VIEWALLCUSTOMER","VIEWCUSTOMER")
+                     */.requestMatchers(HttpMethod.GET, "/customers").hasRole("ADMIN").requestMatchers(HttpMethod.GET, "/customer/**").hasAnyRole("ADMIN", "ROLE").anyRequest().authenticated();
+        }).csrf(csrf -> csrf.disable()).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
+
+        return http.build();
     }
 
     @Bean
